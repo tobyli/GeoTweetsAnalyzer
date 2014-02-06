@@ -1,7 +1,6 @@
 package GeoTweetsAnalyzer;
 
 import au.com.bytecode.opencsv.CSVWriter;
-import sun.java2d.jules.TileWorker;
 import twitter4j.*;
 import twitter4j.auth.AccessToken;
 import java.io.File;
@@ -15,9 +14,11 @@ import java.io.IOException;
 public class AreaTweetsAnalyze {
 
     public static void main(String[] args) throws IOException{
-        File f = new File("output-twin cities-sb.csv");
+        File f = new File("output-romney.csv");
         final FileWriter fileWriter = new FileWriter(f);
         final CSVWriter csvWriter = new CSVWriter(fileWriter, ',');
+
+
         FilterQuery fq = new FilterQuery();
         double lat1 = 44.75;
         double lon1 = -93.65;
@@ -39,13 +40,17 @@ public class AreaTweetsAnalyze {
                     entries[0] = status.getUser().getScreenName();
                     entries[1] = status.getUser().getLocation();
                     entries[2] = status.getText();
-                    entries[3] = status.getGeoLocation().toString();
+                    if(status.getGeoLocation() != null)
+                        entries[3] = status.getGeoLocation().toString();
                     entries[4] = status.getCreatedAt().toString();
                     System.out.println(entries[0]);
                     if(entries[1].length()!=0)
                         System.out.println(entries[1]);
-                    System.out.println(entries[4]);
-                    System.out.println(status.getGeoLocation().toString());
+
+                    if(status.getGeoLocation() != null)
+                        System.out.println(status.getGeoLocation().toString());
+                    else
+                        System.out.println("<null geolocation>");
                     System.out.println(status.getText() + "\n");
 
                     csvWriter.writeNext(entries);
@@ -85,11 +90,13 @@ public class AreaTweetsAnalyze {
             }
         };
         FilterQuery fq2 = new FilterQuery();
-        String keywords[] = {"super bowl"};
+        String keywords[] = {"romney"};
+        //String[] lang = {""};
+        //fq2.language(lang);
         fq2.track(keywords);
 
         twitterStream.addListener(listener);
-        twitterStream.filter(fq);
+        twitterStream.filter(fq2);
 
     }
 
